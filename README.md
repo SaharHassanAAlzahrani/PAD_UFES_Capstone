@@ -1,1 +1,1 @@
-# plant-disease-capstone
+# PAD_UFES_Capstone
