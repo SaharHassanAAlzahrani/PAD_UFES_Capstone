@@ -1,0 +1,10 @@
+
+data/
+
+# Python generated files
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Temporary fold reconstruction
+metadata/generated_folds_check.csv
