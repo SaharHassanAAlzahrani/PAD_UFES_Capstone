@@ -184,6 +184,16 @@ def select_training_epochs(
 
         val_macro_f1 = val_metrics["macro_f1"]
 
+        print(
+            f"  Selection epoch {epoch}/{max_epochs} | "
+            f"train loss {train_loss:.4f} | "
+            f"val loss {val_results['loss']:.4f} | "
+            f"macro-F1 {val_macro_f1:.4f} | "
+            f"balanced acc {val_metrics['balanced_accuracy']:.4f} | "
+            f"LR {learning_rate_used:.2e}",
+            flush=True,
+        )
+
         history.append({
             "epoch": epoch,
             "learning_rate": learning_rate_used,
@@ -205,7 +215,18 @@ def select_training_epochs(
         scheduler.step(val_macro_f1)
 
         if epochs_without_improvement >= patience:
+            print(
+                f"  Early stopping after epoch {epoch}. "
+                f"Best epoch: {best_epoch}",
+                flush=True,
+            )
             break
+
+    print(
+        f"  Selected {best_epoch} epoch(s) | "
+        f"best inner macro-F1 {best_macro_f1:.4f}",
+        flush=True,
+    )
 
     learning_rate_schedule = [
         row["learning_rate"]
@@ -287,6 +308,13 @@ def train_final_model(
             "learning_rate": learning_rate,
             "train_loss": train_loss,
         })
+
+        print(
+            f"  Final training epoch {epoch}/{selected_epochs} | "
+            f"train loss {train_loss:.4f} | "
+            f"LR {learning_rate:.2e}",
+            flush=True,
+        )
 
     return {
         "model": model,
@@ -405,6 +433,13 @@ def run_outer_fold(
         metadata_dim=metadata_dim,
     )
 
+    print(
+        f"  Inner selection | "
+        f"train {len(inner_train_df)} | "
+        f"validation {len(inner_val_df)}",
+        flush=True,
+    )
+
     selection = select_training_epochs(
         model=development_model,
         train_loader=inner_train_loader,
@@ -455,6 +490,13 @@ def run_outer_fold(
         metadata_dim=outer_metadata_dim,
     )
 
+    print(
+        f"  Final retraining | "
+        f"{len(outer_train_df)} samples | "
+        f"{selection['selected_epochs']} epoch(s)",
+        flush=True,
+    )
+
     final_training = train_final_model(
         model=final_model,
         train_loader=outer_train_loader,
@@ -464,6 +506,11 @@ def run_outer_fold(
         learning_rate_schedule=selection[
             "learning_rate_schedule"
         ],
+    )
+
+    print(
+        f"  Held-out evaluation | {len(outer_test_df)} samples",
+        flush=True,
     )
 
     evaluation = evaluate_final_model(
