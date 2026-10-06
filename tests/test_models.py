@@ -145,3 +145,39 @@ def test_acrm_metadata_pathway_receives_gradients():
     assert gate_gradient.abs().sum() > 0
     assert gamma_gradient.abs().sum() > 0
     assert beta_gradient.abs().sum() > 0
+
+def test_metablock_se_forward():
+    """MetaBlock-SE should return one logit per class."""
+    from pad_multimodal.models.metablock_se import MetaBlockSEModel
+
+    model = MetaBlockSEModel(
+        metadata_dim=768,
+        num_classes=6,
+        pretrained=False,
+    )
+
+    model.eval()
+
+    images = torch.randn(2, 3, 224, 224)
+    metadata = torch.randn(2, 768)
+
+    with torch.no_grad():
+        logits = model(images, metadata)
+
+    assert logits.shape == (2, 6)
+    assert torch.isfinite(logits).all()
+
+def test_factory_builds_metablock_se():
+    """Factory should build a working MetaBlock-SE model."""
+    from pad_multimodal.models.factory import build_model
+    from pad_multimodal.models.metablock_se import MetaBlockSEModel
+
+    model = build_model(
+        model_name="metablock_se",
+        metadata_dim=768,
+    )
+
+    assert isinstance(
+        model,
+        MetaBlockSEModel,
+    )

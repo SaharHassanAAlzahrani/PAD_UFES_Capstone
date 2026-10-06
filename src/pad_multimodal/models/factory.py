@@ -1,6 +1,7 @@
 from pad_multimodal.models.acrm import ACRM
 from pad_multimodal.models.concat import ConcatModel
 from pad_multimodal.models.image_only import ImageOnlyEfficientNet
+from pad_multimodal.models.metablock_se import MetaBlockSEModel
 
 
 def build_model(
@@ -29,6 +30,16 @@ def build_model(
             )
 
         return ACRM(
+            metadata_dim=metadata_dim,
+        )
+
+    if model_name == "metablock_se":
+        if metadata_dim is None:
+            raise ValueError(
+                "metadata_dim is required for MetaBlock-SE."
+            )
+
+        return MetaBlockSEModel(
             metadata_dim=metadata_dim,
         )
 

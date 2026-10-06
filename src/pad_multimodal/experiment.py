@@ -25,6 +25,9 @@ from pad_multimodal.data import build_multimodal_loaders
 from pad_multimodal.models.factory import build_model
 from pad_multimodal.preprocessing import fit_transform_metadata
 from pad_multimodal.reproducibility import set_fold_seed
+from sentence_transformers import SentenceTransformer
+
+from pad_multimodal.sentence_metadata import encode_metadata_sentences
 
 def create_inner_split(
     outer_train_df,
@@ -319,6 +322,38 @@ def evaluate_final_model(
         "predictions": results,
     }
 
+def prepare_metadata(
+    train_df,
+    eval_df,
+    model_name,
+):
+    """Prepare the metadata representation required by a model."""
+
+    if model_name == "metablock_se":
+        sentence_encoder = SentenceTransformer(
+            "sentence-transformers/paraphrase-albert-small-v2"
+        )
+
+        train_metadata = encode_metadata_sentences(
+            train_df,
+            sentence_encoder,
+        )
+        eval_metadata = encode_metadata_sentences(
+            eval_df,
+            sentence_encoder,
+        )
+
+        return (
+            train_metadata,
+            eval_metadata,
+            sentence_encoder,
+        )
+
+    return fit_transform_metadata(
+        train_df=train_df,
+        eval_df=eval_df,
+    )
+    
 def run_outer_fold(
     dataframe,
     image_lookup,
@@ -347,9 +382,10 @@ def run_outer_fold(
         inner_train_metadata,
         inner_val_metadata,
         inner_preprocessor,
-    ) = fit_transform_metadata(
+    ) = prepare_metadata(
         train_df=inner_train_df,
         eval_df=inner_val_df,
+        model_name=model_name,
     )
 
     metadata_dim = inner_train_metadata.shape[1]
@@ -386,9 +422,10 @@ def run_outer_fold(
         outer_train_metadata,
         outer_test_metadata,
         outer_preprocessor,
-    ) = fit_transform_metadata(
+    ) = prepare_metadata(
         train_df=outer_train_df,
         eval_df=outer_test_df,
+        model_name=model_name,
     )
 
     outer_metadata_dim = outer_train_metadata.shape[1]
