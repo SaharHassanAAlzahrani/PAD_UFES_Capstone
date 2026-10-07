@@ -120,18 +120,38 @@ def save_confusion_matrix_plot(
     y_pred,
     results_root="results",
 ):
-    """Create and save a confusion matrix plot."""
+    """Create and save a row-normalised confusion matrix plot."""
     matrix = confusion_matrix(
         y_true,
         y_pred,
         labels=range(len(CLASS_NAMES)),
     )
 
-    figure, axis = plt.subplots(
-        figsize=(8, 7)
+    row_totals = matrix.sum(
+        axis=1,
+        keepdims=True,
     )
 
-    image = axis.imshow(matrix)
+    matrix_percent = np.divide(
+        matrix,
+        row_totals,
+        out=np.zeros_like(
+            matrix,
+            dtype=float,
+        ),
+        where=row_totals != 0,
+    ) * 100
+
+    figure, axis = plt.subplots(
+        figsize=(8.5, 7)
+    )
+
+    image = axis.imshow(
+        matrix_percent,
+        cmap="Blues",
+        vmin=0,
+        vmax=100,
+    )
 
     axis.set_xticks(
         range(len(CLASS_NAMES)),
@@ -142,26 +162,81 @@ def save_confusion_matrix_plot(
         labels=CLASS_NAMES,
     )
 
-    axis.set_xlabel("Predicted class")
-    axis.set_ylabel("True class")
+    axis.set_xlabel(
+        "Predicted Class",
+        fontsize=11,
+    )
+    axis.set_ylabel(
+        "True Class",
+        fontsize=11,
+    )
+
+    display_names = {
+        "image_only": "Image-Only",
+        "concat": "Concatenation",
+        "metablock_se": "MetaBlock-SE",
+        "acrm": "ACRM",
+    }
+
+    display_name = display_names.get(
+        model_name,
+        model_name.replace("_", " ").title(),
+    )
+
     axis.set_title(
-        f"{model_name} confusion matrix"
+        f"{display_name} Model: Confusion Matrix",
+        fontsize=14,
+        fontweight="normal",
+        pad=14,
     )
 
     for row in range(matrix.shape[0]):
         for column in range(matrix.shape[1]):
+            percentage = matrix_percent[
+                row,
+                column,
+            ]
+            count = matrix[
+                row,
+                column,
+            ]
+
+            text_color = (
+                "white"
+                if percentage >= 50
+                else "#1F2933"
+            )
+
             axis.text(
                 column,
                 row,
-                str(matrix[row, column]),
+                f"{percentage:.1f}%\n({count})",
                 ha="center",
                 va="center",
+                fontsize=9,
+                color=text_color,
             )
 
-    figure.colorbar(
+    colorbar = figure.colorbar(
         image,
         ax=axis,
+        fraction=0.046,
+        pad=0.04,
     )
+
+    colorbar.set_label(
+        "Percentage of True Class (%)",
+        fontsize=10,
+    )
+
+    axis.tick_params(
+        axis="both",
+        labelsize=10,
+    )
+
+    for spine in axis.spines.values():
+        spine.set_visible(False)
+
     figure.tight_layout()
 
     output_path = save_plot(
