@@ -224,7 +224,7 @@ def main():
         )
 
         print(
-            f"\\nRunning outer fold {fold}"
+            f"Running outer fold {fold}"
         )
 
         result = run_outer_fold(
