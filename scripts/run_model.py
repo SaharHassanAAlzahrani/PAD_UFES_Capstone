@@ -216,6 +216,13 @@ def main():
         )
 
     for fold in folds:
+        if fold in existing_folds:
+            print(
+                f"Skipping outer fold {fold}: "
+                "result already saved."
+            )
+            continue
+            
         fold_metrics, all_predictions = (
             remove_existing_fold(
                 fold_metrics=fold_metrics,
