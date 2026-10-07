@@ -182,6 +182,7 @@ def build_multimodal_loaders(
         shuffle=True,
         num_workers=num_workers,
         pin_memory=torch.cuda.is_available(),
+        drop_last=len(train_dataset) % batch_size == 1,
     )
 
     eval_loader = DataLoader(
