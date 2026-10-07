@@ -1,12 +1,12 @@
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import pandas as pd
-
 import numpy as np
+import pandas as pd
 from sklearn.metrics import confusion_matrix, recall_score
 
 from pad_multimodal.config import CLASS_NAMES
+
 
 def get_model_results_dir(
     model_name,
@@ -113,6 +113,7 @@ def save_plot(
 
     return output_path
 
+
 def save_confusion_matrix_plot(
     model_name,
     y_true,
@@ -181,7 +182,7 @@ def save_per_class_recall_plot(
     y_pred,
     results_root="results",
 ):
-    """Create and save per-class recall plot."""
+    """Create and save a publication-quality per-class recall plot."""
     recalls = recall_score(
         y_true,
         y_pred,
@@ -190,28 +191,95 @@ def save_per_class_recall_plot(
         zero_division=0,
     )
 
+    recall_percent = recalls * 100
+
     figure, axis = plt.subplots(
-        figsize=(8, 5)
+        figsize=(9, 5.5)
     )
 
     positions = np.arange(
         len(CLASS_NAMES)
     )
 
-    axis.bar(
+    bars = axis.bar(
         positions,
-        recalls,
+        recall_percent,
+        width=0.62,
+        color="#234A73",
+        edgecolor="#6A83AA",
+        linewidth=1.4,
+        zorder=3,
     )
+
+    for bar, value in zip(
+        bars,
+        recall_percent,
+    ):
+        axis.text(
+            bar.get_x() + bar.get_width() / 2,
+            value + 1.5,
+            f"{value:.1f}%",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+            color="#1F2933",
+        )
 
     axis.set_xticks(
         positions,
         labels=CLASS_NAMES,
     )
-    axis.set_ylim(0, 1)
-    axis.set_xlabel("Diagnostic class")
-    axis.set_ylabel("Recall")
+
+    axis.set_ylim(0, 100)
+    axis.set_yticks(
+        range(0, 101, 20)
+    )
+
+    axis.set_xlabel(
+        "Diagnostic Class",
+        fontsize=11,
+    )
+    axis.set_ylabel(
+        "Recall (%)",
+        fontsize=11,
+    )
+
+    display_names = {
+        "image_only": "Image-Only",
+        "concat": "Concatenation",
+        "metablock_se": "MetaBlock-SE",
+        "acrm": "ACRM",
+    }
+
+    display_name = display_names.get(
+        model_name,
+        model_name.replace("_", " ").title(),
+    )
+
     axis.set_title(
-        f"{model_name} per-class recall"
+        f"{display_name} Model: Per-Class Recall",
+        fontsize=14,
+        fontweight="normal",
+        pad=14,
+    )
+
+    axis.grid(
+        axis="y",
+        linestyle="--",
+        linewidth=0.7,
+        alpha=0.25,
+        zorder=0,
+    )
+
+    axis.spines["top"].set_visible(False)
+    axis.spines["right"].set_visible(False)
+
+    axis.spines["left"].set_linewidth(0.8)
+    axis.spines["bottom"].set_linewidth(0.8)
+
+    axis.tick_params(
+        axis="both",
+        labelsize=10,
     )
 
     figure.tight_layout()
