@@ -2,7 +2,7 @@ from pad_multimodal.models.acrm import ACRM
 from pad_multimodal.models.concat import ConcatModel
 from pad_multimodal.models.image_only import ImageOnlyEfficientNet
 from pad_multimodal.models.metablock_se import MetaBlockSEModel
-
+from pad_multimodal.models.mmfnet import MMFNetModel
 
 def build_model(
     model_name,
@@ -42,7 +42,16 @@ def build_model(
         return MetaBlockSEModel(
             metadata_dim=metadata_dim,
         )
+        
+    if model_name == "mmfnet":
+        if metadata_dim is None:
+            raise ValueError(
+                "metadata_dim is required for MMF-Net."
+            )
 
+        return MMFNetModel(
+            metadata_dim=metadata_dim,
+        )
     raise ValueError(
         f"Unknown model: {model_name}"
     )

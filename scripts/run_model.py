@@ -29,6 +29,7 @@ def parse_args():
             "image_only",
             "concat",
             "metablock_se",
+            "mmfnet",
             "acrm",
         ],
     )

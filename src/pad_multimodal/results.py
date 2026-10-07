@@ -175,6 +175,7 @@ def save_confusion_matrix_plot(
         "image_only": "Image-Only",
         "concat": "Concatenation",
         "metablock_se": "MetaBlock-SE",
+        "mmfnet": "MMF-Net",
         "acrm": "ACRM",
     }
 
@@ -323,6 +324,7 @@ def save_per_class_recall_plot(
         "image_only": "Image-Only",
         "concat": "Concatenation",
         "metablock_se": "MetaBlock-SE",
+        "mmfnet": "MMF-Net",
         "acrm": "ACRM",
     }
 

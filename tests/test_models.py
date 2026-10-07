@@ -181,3 +181,120 @@ def test_factory_builds_metablock_se():
         model,
         MetaBlockSEModel,
     )
+
+def test_mmfnet_forward():
+    """MMF-Net should return finite logits for all classes."""
+    from pad_multimodal.models.mmfnet import MMFNetModel
+
+    model = MMFNetModel(
+        metadata_dim=33,
+        num_classes=6,
+        pretrained=False,
+    )
+
+    model.eval()
+
+    images = torch.randn(
+        2,
+        3,
+        224,
+        224,
+    )
+
+    metadata = torch.randn(
+        2,
+        33,
+    )
+
+    with torch.no_grad():
+        logits = model(
+            images,
+            metadata,
+        )
+
+    assert logits.shape == (2, 6)
+    assert torch.isfinite(logits).all()
+
+
+def test_mmfnet_metadata_pathway_receives_gradients():
+    """MMF-Net metadata and cross-attention pathways should receive gradients."""
+    from pad_multimodal.models.mmfnet import MMFNetModel
+
+    model = MMFNetModel(
+        metadata_dim=33,
+        num_classes=6,
+        pretrained=False,
+    )
+
+    images = torch.randn(
+        2,
+        3,
+        224,
+        224,
+    )
+
+    metadata = torch.randn(
+        2,
+        33,
+    )
+
+    targets = torch.tensor([
+        0,
+        1,
+    ])
+
+    criterion = torch.nn.CrossEntropyLoss()
+
+    logits = model(
+        images,
+        metadata,
+    )
+
+    loss = criterion(
+        logits,
+        targets,
+    )
+
+    loss.backward()
+
+    metadata_gradient = (
+        model.metadata_encoder[0]
+        .weight
+        .grad
+    )
+
+    image_cross_gradient = (
+        model.image_cross_attention
+        .in_proj_weight
+        .grad
+    )
+
+    metadata_cross_gradient = (
+        model.metadata_cross_attention
+        .in_proj_weight
+        .grad
+    )
+
+    assert metadata_gradient is not None
+    assert image_cross_gradient is not None
+    assert metadata_cross_gradient is not None
+
+    assert metadata_gradient.abs().sum() > 0
+    assert image_cross_gradient.abs().sum() > 0
+    assert metadata_cross_gradient.abs().sum() > 0
+
+
+def test_factory_builds_mmfnet():
+    """Factory should build a working MMF-Net model."""
+    from pad_multimodal.models.factory import build_model
+    from pad_multimodal.models.mmfnet import MMFNetModel
+
+    model = build_model(
+        model_name="mmfnet",
+        metadata_dim=33,
+    )
+
+    assert isinstance(
+        model,
+        MMFNetModel,
+    )
