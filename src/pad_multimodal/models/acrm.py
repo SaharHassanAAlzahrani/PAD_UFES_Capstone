@@ -1,3 +1,4 @@
+
 import torch
 import torch.nn as nn
 
@@ -19,8 +20,13 @@ class ACRM(nn.Module):
         num_classes=NUM_CLASSES,
         metadata_hidden_dim=METADATA_HIDDEN_DIM,
         dropout=DROPOUT,
+        use_residual=True,
+        use_gate=True,
     ):
         super().__init__()
+
+        self.use_residual = use_residual
+        self.use_gate = use_gate
 
         weights = models.EfficientNet_B0_Weights.IMAGENET1K_V1
 
@@ -106,21 +112,25 @@ class ACRM(nn.Module):
             metadata_features
         )
 
-        gate = torch.sigmoid(
-            self.gate_head(
-                metadata_features
-            )
-        )
-
         modulation = (
             gamma * visual_features
             + beta
         )
 
-        modulated_features = (
-            visual_features
-            + gate * modulation
-        )
+        if self.use_gate:
+            gate = torch.sigmoid(
+                self.gate_head(
+                    metadata_features
+                )
+            )
+            modulation = gate * modulation
+
+        if self.use_residual:
+            modulated_features = (
+                visual_features + modulation
+            )
+        else:
+            modulated_features = modulation
 
         return self.classifier(
             modulated_features
