@@ -31,6 +31,8 @@ def parse_args():
             "metablock_se",
             "mmfnet",
             "acrm",
+            "acrm_no_gate",
+            "acrm_no_residual_no_gate",
         ],
     )
 
