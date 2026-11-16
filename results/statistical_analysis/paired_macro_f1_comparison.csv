@@ -1,0 +1,7 @@
+Comparison,Mean Difference,95% CI Lower,95% CI Upper,Wilcoxon p-value
+ACRM vs Image-only,0.0927,0.0669,0.1186,0.0625
+ACRM vs Concatenation,0.0574,0.0294,0.0854,0.0625
+ACRM vs MetaBlock-SE,0.0881,0.0096,0.1666,0.125
+ACRM vs MMF-Net,0.0405,-0.0009,0.082,0.125
+ACRM vs ACRM (No Gate),0.0179,-0.0064,0.0422,0.3125
+ACRM vs ACRM (No Residual/Gate),0.0247,-0.0088,0.0583,0.0625
