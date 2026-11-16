@@ -1,0 +1,8 @@
+Model,Mean Macro-F1,Parameters (M),Mean Batch Latency (ms),SD Batch Latency (ms),Peak GPU Memory (MiB)
+image_only,0.6042,4.015,34.025,0.149,363.55
+concat,0.6396,4.034,34.479,0.141,363.62
+metablock_se,0.6088,4.065,34.846,0.135,363.84
+mmfnet,0.6564,4.488,35.482,0.118,365.36
+acrm,0.697,4.528,35.714,0.204,365.51
+acrm_no_gate,0.6791,4.528,36.186,0.167,365.51
+acrm_no_residual_no_gate,0.6722,4.528,36.966,0.312,365.51
