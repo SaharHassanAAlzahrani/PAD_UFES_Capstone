@@ -1,8 +1,8 @@
-Model,Total Parameters,Trainable Parameters,Forward-Used Parameters,Parameters (M)
-image_only,4015234,4015234,4015234,4.015
-concat,4033666,4033666,4033666,4.034
-metablock_se,4064578,4064578,4064578,4.065
-mmfnet,4488066,4488066,4488066,4.488
-acrm,4528258,4528258,4528258,4.528
-acrm_no_gate,4528258,4528258,4363138,4.528
-acrm_no_residual_no_gate,4528258,4528258,4363138,4.528
+Model,Metadata Input Dim,Total Parameters,Trainable Parameters,Forward-Used Parameters,Parameters (M)
+image_only,0,4015234,4015234,4015234,4.015
+concat,33,4036866,4036866,4036866,4.037
+metablock_se,768,4064578,4064578,4064578,4.065
+mmfnet,33,4491266,4491266,4491266,4.491
+acrm,33,4531458,4531458,4531458,4.531
+acrm_no_gate,33,4531458,4531458,4366338,4.531
+acrm_no_residual_no_gate,33,4531458,4531458,4366338,4.531

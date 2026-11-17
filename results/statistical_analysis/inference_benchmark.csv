@@ -1,8 +1,8 @@
 Model,Mean Batch Latency (ms),SD Batch Latency (ms),Mean Latency per Image (ms),Peak GPU Memory (MiB),Benchmark Source
-image_only,34.025,0.149,1.0633,363.55,Initial repeated benchmark
-concat,34.479,0.141,1.0775,363.62,Initial repeated benchmark
-metablock_se,34.846,0.135,1.0889,363.84,Initial repeated benchmark
-mmfnet,35.482,0.118,1.1088,365.36,Initial repeated benchmark
-acrm,35.714,0.204,1.1161,365.51,Focused verification run
-acrm_no_gate,36.186,0.167,1.1308,365.51,Initial repeated benchmark
-acrm_no_residual_no_gate,36.966,0.312,1.1552,365.51,Initial repeated benchmark
+image_only,33.04,0.108,1.0325,363.55,Primary seven-model benchmark
+concat,33.314,0.094,1.041,363.64,Primary seven-model benchmark
+metablock_se,33.78,0.458,1.0556,363.84,Primary seven-model benchmark
+mmfnet,34.205,0.113,1.0689,365.37,Primary seven-model benchmark
+acrm,34.306,0.116,1.0721,365.53,Primary seven-model benchmark
+acrm_no_gate,34.689,0.149,1.084,365.53,Primary seven-model benchmark
+acrm_no_residual_no_gate,35.073,0.147,1.096,365.53,Primary seven-model benchmark
